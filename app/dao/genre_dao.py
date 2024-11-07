@@ -1,7 +1,7 @@
 from sqlalchemy import text
 from app import db
 
-class GenreDAO:
+class genre_dao:
     @staticmethod
     def get_all():
         query = text("SELECT * FROM Genre")
@@ -27,7 +27,7 @@ class GenreDAO:
     def update(genre_id, data):
         db.session.execute(text("UPDATE Genre SET name = :name WHERE ID = :id"), {'name': data['name'], 'id': genre_id})
         db.session.commit()
-        return GenreDAO.get_by_id(genre_id)
+        return genre_dao.get_by_id(genre_id)
 
     @staticmethod
     def delete(genre_id):
