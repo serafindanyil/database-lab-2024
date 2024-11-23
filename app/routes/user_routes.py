@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.services.user_service import UserService
 
-bp = Blueprint('user', __name__, url_prefix='/users')
+bp = Blueprint('user', __name__, url_prefix='/user')
 
 @bp.route('/', methods=['GET'])
 def get_users():

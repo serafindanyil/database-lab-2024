@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.services.authorization_service import AuthorizationService
 
-bp = Blueprint('authorization', __name__, url_prefix='/authorizations')
+bp = Blueprint('authorization', __name__, url_prefix='/authorization')
 
 @bp.route('/', methods=['GET'])
 def get_authorizations():
@@ -35,3 +35,4 @@ def delete_authorization(auth_id):
     if not result:
         return jsonify({'message': 'Authorization not found'}), 404
     return jsonify({'message': 'Authorization deleted successfully'})
+
