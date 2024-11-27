@@ -31,8 +31,13 @@ class authorization_dao:
 
     @staticmethod
     def update(auth_id, data):
-        db.session.execute(text("UPDATE authorization SET email = :email, password = :password WHERE ID = :id"),
-                           {'email': data['email'], 'password': data['password'], 'id': auth_id})
+        if 'email' not in data or 'password' not in data:
+            raise ValueError("Both 'email' and 'password' are required to update authorization.")
+
+        db.session.execute(
+            text("UPDATE authorization SET email = :email, password = :password WHERE ID = :id"),
+            {'email': data['email'], 'password': data['password'], 'id': auth_id}
+        )
         db.session.commit()
         return authorization_dao.get_by_id(auth_id)
 
