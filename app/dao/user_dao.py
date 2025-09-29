@@ -10,6 +10,29 @@ class user_dao:
         return [dict(row) for row in result]
 
     @staticmethod
+    def get_download():
+        query = text("""
+SELECT 
+    u.name AS user_name, 
+    u.subscription_plan AS subscription_plan,
+    GROUP_CONCAT(s.name ORDER BY s.name) AS downloaded_songs,
+    GROUP_CONCAT(s.download_count ORDER BY s.name) AS download_counts
+FROM 
+    itunes.user u
+JOIN 
+    itunes.download d ON u.authorization_id = d.user_authorization_id 
+JOIN 
+    itunes.song s ON d.song_id = s.id 
+GROUP BY 
+    u.authorization_id 
+ORDER BY 
+    u.name;
+
+               """)
+        result = db.session.execute(query).mappings().all()
+        return [dict(row) for row in result]
+
+    @staticmethod
     def get_by_id(user_id):
         query = text("SELECT * FROM user WHERE authorization_id = :id")
         result = db.session.execute(query, {'id': user_id}).mappings().first()

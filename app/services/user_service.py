@@ -6,6 +6,10 @@ class UserService:
         return user_dao.get_all()
 
     @staticmethod
+    def get_download():
+        return user_dao.get_download()
+
+    @staticmethod
     def get_user_by_id(user_id):
         return user_dao.get_by_id(user_id)
 
@@ -20,3 +24,6 @@ class UserService:
     @staticmethod
     def delete_user(user_id):
         return user_dao.delete(user_id)
+
+
+
