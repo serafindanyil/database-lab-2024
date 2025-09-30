@@ -1,74 +1,47 @@
-from app import db
-from sqlalchemy import text
+from sqlalchemy import select
+
+from app.extensions import db
+from app.models.download_model import Download
+from app.models.user_model import User
 
 
-class user_dao:
-    @staticmethod
-    def get_all():
-        query = text("SELECT * FROM user")
-        result = db.session.execute(query).mappings().all()
-        return [dict(row) for row in result]
+class UserDao:
+    def get_all(self):
+        return db.session.scalars(select(User).order_by(User.id)).all()
 
-    @staticmethod
-    def get_download():
-        query = text("""
-SELECT 
-    u.name AS user_name, 
-    u.subscription_plan AS subscription_plan,
-    GROUP_CONCAT(s.name ORDER BY s.name) AS downloaded_songs,
-    GROUP_CONCAT(s.download_count ORDER BY s.name) AS download_counts
-FROM 
-    itunes.user u
-JOIN 
-    itunes.download d ON u.authorization_id = d.user_authorization_id 
-JOIN 
-    itunes.song s ON d.song_id = s.id 
-GROUP BY 
-    u.authorization_id 
-ORDER BY 
-    u.name;
+    def get_by_id(self, user_id):
+        return db.session.get(User, user_id)
 
-               """)
-        result = db.session.execute(query).mappings().all()
-        return [dict(row) for row in result]
+    def create(self, data):
+        """Просто створює об'єкт Python, не додаючи його до сесії."""
+        new_user = User(**data)
+        return new_user
 
-    @staticmethod
-    def get_by_id(user_id):
-        query = text("SELECT * FROM user WHERE authorization_id = :id")
-        result = db.session.execute(query, {'id': user_id}).mappings().first()
-        return dict(result) if result else None
+    def update(self, user_id, data):
+        user = self.get_by_id(user_id)
+        if not user:
+            return None
+        for key, value in data.items():
+            setattr(user, key, value)
+        return user
 
-    @staticmethod
-    def create(data):
-        db.session.execute(text("""
-            INSERT INTO User (name, authorization_id, profile_user_id, subcription_id)
-            VALUES (:name, :authorization_id, :profile_user_id, :subcription_id)
-        """), data)
-        db.session.commit()
-        result = db.session.execute(text("SELECT LAST_INSERT_ID() AS ID"))
-        new_id = result.fetchone()['ID']
-        return {"ID": new_id, **data}
+    def delete(self, user_id):
+        user = self.get_by_id(user_id)
+        if not user:
+            return False
+        db.session.delete(user)
+        return True
 
-    @staticmethod
-    def update(user_id, data):
-        db.session.execute(text("""
-            UPDATE User SET name = :name, Authorization_ID = :authorization_id,
-            Profile_user_ID = :profile_user_id, Subcription_ID = :subcription_id WHERE ID = :id
-        """), {**data, 'id': user_id})
-        db.session.commit()
-        return user_dao.get_by_id(user_id)
+    def get_downloads(self):
+        downloads = db.session.scalars(select(Download).order_by(Download.id)).all()
+        return [
+            {
+                "id": download.id,
+                "song_id": download.song_id,
+                "user_id": download.user_id,
+            }
+            for download in downloads
+        ]
 
-    @staticmethod
-    def delete(user_id):
-        user_delete_result = db.session.execute(
-            text("DELETE FROM user WHERE authorization_id = :id"),
-            {'id': user_id}
-        )
 
-        authorization_delete_result = db.session.execute(
-            text("DELETE FROM authorization WHERE id = :id"),
-            {'id': user_id}
-        )
-        db.session.commit()
-
-        return user_delete_result.rowcount > 0 and authorization_delete_result.rowcount > 0
+user_dao = UserDao()

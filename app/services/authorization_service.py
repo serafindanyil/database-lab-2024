@@ -1,5 +1,6 @@
 from app.dao.authorization_dao import authorization_dao
 
+
 class AuthorizationService:
     @staticmethod
     def get_all_authorizations():
@@ -11,6 +12,11 @@ class AuthorizationService:
 
     @staticmethod
     def create_authorization(data):
+        required_fields = {"email", "password"}
+        missing = required_fields - data.keys()
+        if missing:
+            field_list = ", ".join(sorted(missing))
+            raise ValueError(f"Missing required fields: {field_list}")
         return authorization_dao.create(data)
 
     @staticmethod

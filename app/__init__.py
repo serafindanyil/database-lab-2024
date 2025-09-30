@@ -1,16 +1,31 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from app.config import Config
+from config import Config
 
-db = SQLAlchemy()
+from app.extensions import db, migrate
+from app.routes import init_app as register_blueprints
 
-def create_app():
-    app = Flask(__name__)
-    app.config.from_object(Config)
 
-    db.init_app(app)
+def create_app(config_object: type[Config] | None = None) -> Flask:
+	app = Flask(__name__)
+	if config_object is not None:
+		app.config.from_object(config_object)
+	else:
+		app.config.from_object(Config)
 
-    from app.routes import init_app as register_routes
-    register_routes(app)
+	app.config.setdefault("SQLALCHEMY_DATABASE_URI", "sqlite:///app.db")
+	app.config.setdefault("SQLALCHEMY_TRACK_MODIFICATIONS", False)
 
-    return app
+	db.init_app(app)
+	migrate.init_app(app, db)
+
+	with app.app_context():
+		from app import models  # noqa: F401
+		db.create_all()
+
+	register_blueprints(app)
+
+	@app.get("/health")
+	def health_check() -> dict[str, str]:
+		return {"status": "ok"}
+
+	return app

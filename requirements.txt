@@ -1,0 +1,10 @@
+Flask==2.3.3
+Flask-RESTX==1.2.0
+Flask-Migrate==4.0.4
+Flask-SQLAlchemy==2.5.1
+SQLAlchemy==1.4.48
+mysql-connector-python==8.1.0
+gunicorn==21.2.0
+python-dotenv==1.0.0
+PyYAML==6.0.1
+
