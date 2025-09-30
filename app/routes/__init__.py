@@ -1,11 +1,23 @@
-from .authorization_routes import bp as authorization_bp
-from .user_routes import bp as user_bp
-from .review_routes import bp as review_bp
-from .label_routes import bp as label_bp
+from flask_restx import Api
+
+from .authorization_routes import authorization_ns
+from .label_routes import label_ns
+from .review_routes import review_ns
+from .user_routes import user_ns
+
+
+api = Api(
+    title="Music Library API",
+    version="1.0",
+    description="Interactive documentation for the music platform",
+    doc="/docs",
+)
+
+api.add_namespace(authorization_ns)
+api.add_namespace(user_ns)
+api.add_namespace(review_ns)
+api.add_namespace(label_ns)
 
 
 def init_app(app):
-    app.register_blueprint(authorization_bp)
-    app.register_blueprint(user_bp)
-    app.register_blueprint(review_bp)
-    app.register_blueprint(label_bp)
+    api.init_app(app)

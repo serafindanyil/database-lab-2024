@@ -28,3 +28,15 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     SQLALCHEMY_ECHO = False
+
+    if SQLALCHEMY_DATABASE_URI.startswith("sqlite"):
+        SQLALCHEMY_ENGINE_OPTIONS = {
+            "connect_args": {"check_same_thread": False},
+        }
+    else:
+        SQLALCHEMY_ENGINE_OPTIONS = {
+            "pool_pre_ping": True,
+            "pool_recycle": int(os.environ.get("DB_POOL_RECYCLE", 280)),
+            "pool_size": int(os.environ.get("DB_POOL_SIZE", 5)),
+            "max_overflow": int(os.environ.get("DB_MAX_OVERFLOW", 10)),
+        }
