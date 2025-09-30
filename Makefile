@@ -1,4 +1,4 @@
-.PHONY: install venv run dev gunicorn db-init db-migrate db-upgrade db-downgrade db-current clean
+.PHONY: install venv run dev gunicorn db-init db-migrate db-upgrade db-downgrade db-current seed clean
 
 VENV ?= venv
 PYTHON := $(VENV)/bin/python
@@ -45,6 +45,9 @@ db-downgrade: install
 db-current: install
 	FLASK_APP=$(FLASK_APP) $(PYTHON) -m flask db current
 
+seed: install
+	FLASK_APP=$(FLASK_APP) $(PYTHON) -m flask seed
+
 clean:
 	rm -rf $(VENV)
-	rm -rf __pycache__ */__pycache__й
+	find . -name '__pycache__' -type d -prune -exec rm -rf {} +

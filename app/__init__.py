@@ -28,4 +28,10 @@ def create_app(config_object: type[Config] | None = None) -> Flask:
 	def health_check() -> dict[str, str]:
 		return {"status": "ok"}
 
+	@app.cli.command("seed")
+	def seed_command() -> None:
+		from app.seeds import seed_database
+
+		seed_database()
+
 	return app

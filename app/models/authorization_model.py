@@ -11,11 +11,9 @@ class Authorization(BaseModel):
         "User",
         back_populates="authorization",
         cascade="all, delete-orphan",
-        passive_deletes=True,
     )
     creators = db.relationship(
         "Creator",
         back_populates="authorization",
         cascade="all, delete-orphan",
-        passive_deletes=True,
     )

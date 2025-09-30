@@ -11,3 +11,5 @@ app/dao/__pycache__/user_dao.cpython-313.pyc
 /app/dao/__pycache__
 /app/dao
 *.pyc
+app/routes/__pycache__/__init__.cpython-313.pyc
+*.pyc
