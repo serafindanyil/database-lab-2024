@@ -3,3 +3,4 @@ app.yaml
 venv
 *.pyc
 
+.env
