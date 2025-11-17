@@ -1,0 +1,35 @@
+# ============================================================================
+# Dockerfile для контейнера з генератором навантаження
+# Використовується для тестування масштабування на AWS App Platform
+# ============================================================================
+
+FROM python:3.11-slim
+
+# Встановлюємо змінні середовища
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+# Створюємо робочу директорію
+WORKDIR /app
+
+# Копіюємо файли
+COPY load_test.py .
+COPY load_test_requirements.txt .
+
+# Встановлюємо залежності
+RUN pip install --no-cache-dir -r load_test_requirements.txt
+
+# Робимо скрипт виконуваним
+RUN chmod +x load_test.py
+
+# За замовчуванням запускаємо тест
+# Можна перевизначити через docker run
+# Використовуємо ENTRYPOINT для python, CMD для аргументів
+ENTRYPOINT ["python", "load_test.py"]
+
+# За замовчуванням тестуємо localhost
+# Перевизначте через docker run: docker run load-tester --url https://your-app.com --users 50
+CMD ["--url", "http://localhost:8000", "--users", "10", "--duration", "60"]
+
+
+

@@ -33,7 +33,7 @@ ENV/
 .gitattributes
 
 # Docker
-Dockerfile*
+Dockerfile.loadtest
 docker-compose*.yml
 .dockerignore
 
@@ -50,6 +50,7 @@ htmlcov/
 # Logs
 *.log
 logs/
+load_test_stats_*.json
 
 # Database
 *.db
@@ -69,4 +70,3 @@ config.local.py
 *.bak
 *.tmp
 .cache/
-
